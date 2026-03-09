@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.vscode/
+dataset/*.csv
+model/*.pkl
+model/*.joblib
+venv/
+.env

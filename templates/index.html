@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake News Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Premium Ambient Background -->
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+    <div class="bg-orb orb-3"></div>
+
+    <div class="container">
+        <div class="header">
+            <h2>Fake News Detection System</h2>
+            <p>Analyze news articles using Machine Learning to determine if they are authentic or misleading.</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Left Side: Verification Form -->
+            <div class="verification-column">
+                <form method="POST" class="form-container" onsubmit="showLoader()">
+                    <textarea id="news-input" name="news" rows="8" placeholder="Paste the news article or text here..." required>{{ news }}</textarea>
+                    <button type="submit" id="submit-btn">Verify News Authenticity</button>
+                </form>
+
+                <div class="loader-wrapper" id="loader">
+                    <div class="spinner"></div>
+                    <p style="color: #94A3B8; font-size: 14px; margin-top: 10px;">Analyzing text with Machine Learning...</p>
+                </div>
+
+                {% if result %}
+                <div class="result-card {{ result.status }}">
+                    <div class="result-badge">
+                        <span class="icon">{{ result.icon }}</span>
+                        <span class="label">{{ result.label }}</span>
+                    </div>
+                    <div class="result-details">
+                        <p>{{ result.message }}</p>
+                    </div>
+
+                    {% if result.research or result.research_status %}
+                    <div class="research-section">
+                        <div class="research-header">
+                            <span class="pulse">🌐</span> Global Verification: <strong>{{ result.research_status }}</strong>
+                        </div>
+                        {% if result.research %}
+                        <div class="research-links">
+                            <p style="font-size: 13px; margin-bottom: 8px; color: #94A3B8;">Cross-referenced sources:</p>
+                            <ul>
+                                {% for article in result.research %}
+                                <li><a href="{{ article.url }}" target="_blank">{{ article.source }}: {{ article.title }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <div class="result-meta">
+                        Analyzed with Stacking Ensemble & Global Research API
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Right Side: Live News Feed -->
+            <div class="news-feed feed-column">
+                <h3 class="feed-header">
+                    🔴 Live Headlines
+                    <p class="feed-subtitle">Click a headline to test it!</p>
+                </h3>
+                
+                <div class="scroll-feed">
+                    {% if live_news %}
+                        {% for item in live_news %}
+                        <div class="news-card" onclick="pasteNews({{ (item.title ~ ' - ' ~ item.description)|tojson|safe }})">
+                            <h4>{{ item.title }}</h4>
+                            <p class="source">{{ item.source }}</p>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p style="color: #94A3B8; font-size: 14px; font-style: italic;">Could not load live news. NewsAPI may be unavailable.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
